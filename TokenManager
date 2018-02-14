@@ -1,0 +1,50 @@
+pragma solidity ^0.4.19;
+
+/* The TokenManager makes the Transactions possible and holds the balances
+ * It has a function to initialize the Token-Pool
+ * Tokens can only be 'given' so noone can 'take' them away from others
+ * How tokens can be 'given' is implemented in other SmartContracts
+ */
+contract TokenManager {
+    address owner;                          // Creator of this SmartContract
+    bool initialized;                       // To prevent multi initializations
+    mapping (address => uint256) balance;   // Mapping that holds the balances
+    
+    /* Constructor */
+    function TokenManager() public {
+        // Sets the owner to the creator of this contract
+        owner = msg.sender;
+    }
+    
+    /* Can be called once from the owner, it creates the main token-pool with 
+     * an adjustable amount of tokens */
+    function start(address start_account, uint256 amount) public {
+        // Method can just be called by the owner
+        require(msg.sender == owner);
+        
+        // Method can just be called once
+        require(initialized == false);
+        initialized = true;
+        
+        // Initialize the balance of the start_account
+        balance[start_account] = amount;
+    }
+    
+    /* Function that handles all the transactions */
+    function give(address destination, uint40 amount) public {
+        // Check if there are enough tokens on the senders account
+        require(balance[msg.sender] >= amount);
+        
+        // Note: Theres a limited amount of tokens available - less then 2^256
+        // So overflows can't happen
+        
+        // Do the transaction
+        balance[msg.sender] -= amount;
+        balance[destination] += amount;
+    }
+    
+    /* Function to read balances */
+    function ask(address destination) public view returns (uint256) {
+        return balance[destination];
+    }
+}
