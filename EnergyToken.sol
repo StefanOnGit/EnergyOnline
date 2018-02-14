@@ -3,8 +3,13 @@ pragma solidity ^0.4.19;
 // The core contract that holds the balance and has a simple and proofable correct interface
 contract EnergyToken {
     
-    /* For each owner and token_type, there is the possibility to store the balance */
+    /* For each owner there are pairs of (token_type => amount) stored */
     mapping (address => mapping(address => uint256)) balances;
+    
+    /* Read amount of tokens an owner has from a specific token_type */
+    function balance_of(address owner, address token_type) public view returns (uint256) {
+        return balances[owner][token_type];                                                 // Just reads the requested balance
+    }
     
     /* Moves tokens of a token_type from the sender to the destination */
     function transfer_to(address destination, address token_type, uint256 amount) public {
