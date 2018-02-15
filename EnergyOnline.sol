@@ -109,3 +109,39 @@ contract Oracle {
         EWZ(ewz).pay(user, amount);
     }
 }
+
+contract UserContract is Callback {
+    address owner;
+    address ewz;
+    address energy_wallets;
+    uint256 amount;
+    
+    function UserContract() public {
+        owner = msg.sender;
+    }
+    
+    function set_addresses(address ewz_adr, address energy_wallets_adr) public {
+        require(msg.sender == owner);
+        ewz = ewz_adr;
+        energy_wallets = energy_wallets_adr;
+    }
+    
+    function call() public {
+        require(msg.sender == ewz);
+        require(amount > 0);
+        uint256 temp = amount;
+        amount = 0;
+        EnergyWallets(energy_wallets).pay(ewz, temp);
+    }
+    
+    function pay_user(address adr, uint256 _amount) public {
+        require(msg.sender == owner);
+        EnergyWallets(energy_wallets).pay(adr, _amount);
+    }
+    
+    function pay_to_ewz(uint256 pay_amount) public {
+        require(msg.sender == owner);
+        amount = pay_amount;
+        EWZ(ewz).sell_tokens_to_ewz(amount, Callback(this));
+    }
+}
