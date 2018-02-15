@@ -2,13 +2,12 @@ pragma solidity ^0.4.19;
 
 /* The main contract for the EnergyToken trading containing the balances */
 contract EnergyWallet {
-
     mapping(address => uint256) balance;
     address owner;
     bool initialized;
     
     /* Constructor that initializes the owner */
-    function EnergyToken() public {
+    function EnergyWallet() public {
         owner = msg.sender;
     }
     
