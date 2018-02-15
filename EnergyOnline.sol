@@ -134,6 +134,11 @@ contract UserContract is Callback {
         EnergyWallets(energy_wallets).pay(ewz, temp);
     }
     
+    function pay_user(address adr, uint256 _amount) public {
+        require(msg.sender == owner);
+        EnergyWallets(energy_wallets).pay(adr, _amount);
+    }
+    
     function pay_to_ewz(uint256 pay_amount) public {
         require(msg.sender == owner);
         amount = pay_amount;
