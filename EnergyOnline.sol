@@ -1,147 +1,64 @@
 pragma solidity ^0.4.19;
 
-/* The main contract for the EnergyToken trading containing the balances */
-contract EnergyWallets {
+contract Policy {
+    /* Helper function that decides if the Origin should give some Tokens away */
+    function grantTokens(address target, uint256 amount) public view returns(bool);
+}
+
+contract Origin {
+    /* Variable to prevent reentrant bugs */
+    bool reenter;
+    
+    /* The token amount for every account */
     mapping(address => uint256) balance;
-    address owner;
-    bool initialized;
     
-    /* Constructor that initializes the owner */
-    function EnergyWallets() public {
-        owner = msg.sender;
+    /* The address of the actual policy */
+    address tokenPolicy;
+    
+    /* Just a constructor */
+    function Tokens() public {
+        /* Initialize the balance of the origin */
+        balance[address(this)] = 1e40;
     }
     
-    /* Function that can be called once by the owner
-     * It initalizes one wallet with tokens */
-    function initialize(address wallet) public {
-        require(msg.sender == owner);
-        require(initialized == false);
-        initialized = true;
-        balance[wallet] = 1e40;
-    }
+    /* Event that will be called on every transfer */
+    event Transfer(address source, address target, uint256 amount);
     
-    /* Function that takes tokens from one wallet and puts it to another one. 
-     * Only callable by the owner of the wallet that looses tokens */
-    function pay(address wallet, uint256 amount) public {
+    /* Function to transfer tokens from one account to another */
+    function transfer(address target, uint256 amount) public {
+        require(reenter == false);
+        reenter = true;
+        
+        /* Source (= Caller) needs enough balance on account */
         require(balance[msg.sender] >= amount);
+        /* Do the transfer */
         balance[msg.sender] -= amount;
-        balance[wallet] += amount;
+        balance[target] += amount;
+        /* Fire a transfer-event for eventual listeners */
+        Transfer(msg.sender, target, amount);
+        
+        reenter = false;
     }
     
-    /* Function to read the balance of a wallet */
-    function ask_balance(address wallet) public view returns (uint256) {
-        return balance[wallet];
+    /* Ask the origin for some tokens */
+    function requestTokens(address target, uint256 amount) public {
+        require(reenter == false);
+        reenter = true;
+        
+        /* According to the policy your demand will be declined */
+        require(Policy(tokenPolicy).grantTokens(target, amount));
+        /* Start the transaction */
+        /* This can still fail if the balance of the origin is too low */
+        
+        reenter = false;
+        
+        transfer(target, amount);
     }
-}
-
-/* */
-contract Callback {
-    function call() public;
-}
-
-/* The EWZ contract that has the possibility to trade with people and companies */
-contract EWZ {
-    bool pending;
-    bool addresses_set;
-    address wallets;
-    address oracle;
-    address owner;
-    
-    /* Constructor that sets the owner */
-    function EWZ() public {
-        owner = msg.sender;
-    }
-    
-    /* Function that can be called once to set the address of the wallet */
-    function set_addresses(address wallets_adr, address oracle_adr) public {
-        require(msg.sender == owner);
-        require(addresses_set == false);
-        addresses_set = true;
-        wallets = wallets_adr;
-        oracle = oracle_adr;
-    }
-    
-    /* Owner and Oracle callable function to pay some tokens to an address */
-    function pay(address wallet, uint256 amount) public {
-        require(pending == false);
-        require(msg.sender == owner || msg.sender == oracle);
-        EnergyWallets(wallets).pay(wallet, amount);
-    }
-
-    /* Called when a user wants to sell tokens to ewz. Then EWZ releases and event
-     * that should get caught by the oracle, and the oracle should ensure that either
-     * the user gets his tokens back (oracle can call 'pay') or the user gets his
-     * energy discount in the real world */    
-    function sell_tokens_to_ewz(uint256 amount, address callback) public {
-        require(pending == false);
-        uint256 ewz_wallet_before = EnergyWallets(wallets).ask_balance(address(this));
-        pending = true;
-        Callback(callback).call();
-        pending = false;
-        uint256 ewz_wallet_now = EnergyWallets(wallets).ask_balance(address(this));
-        require(ewz_wallet_before == ewz_wallet_now - amount);
-        Oracle(oracle).user_sold_tokens_to_ewz(msg.sender, amount);
-    }
-}
-
-contract Oracle {
-    address owner;
-    address ewz;
-
-    event event_user_sold_tokens_to_ewz(address user, uint256 amount);
-    
-    function Oracle() public {
-        owner = msg.sender;
-    }
-    
-    function set_addresses(address ewz_adr) public {
-        require(msg.sender == owner);
-        ewz = ewz_adr;
-    }
-    
-    function user_sold_tokens_to_ewz(address user, uint256 amount) public {
-        require(msg.sender == address(ewz));
-        event_user_sold_tokens_to_ewz(user, amount);
-    }
-    
-    function pay_user(address user, uint256 amount) public {
-        require(msg.sender == owner);
-        EWZ(ewz).pay(user, amount);
-    }
-}
-
-contract UserContract is Callback {
-    address owner;
-    address ewz;
-    address energy_wallets;
-    uint256 amount;
-    
-    function UserContract() public {
-        owner = msg.sender;
-    }
-    
-    function set_addresses(address ewz_adr, address energy_wallets_adr) public {
-        require(msg.sender == owner);
-        ewz = ewz_adr;
-        energy_wallets = energy_wallets_adr;
-    }
-    
-    function call() public {
-        require(msg.sender == ewz);
-        require(amount > 0);
-        uint256 temp = amount;
-        amount = 0;
-        EnergyWallets(energy_wallets).pay(ewz, temp);
-    }
-    
-    function pay_user(address adr, uint256 _amount) public {
-        require(msg.sender == owner);
-        EnergyWallets(energy_wallets).pay(adr, _amount);
-    }
-    
-    function pay_to_ewz(uint256 pay_amount) public {
-        require(msg.sender == owner);
-        amount = pay_amount;
-        EWZ(ewz).sell_tokens_to_ewz(amount, Callback(this));
+    reenter
+    /* There should be a mechanism that can decide about the policy */
+    function setTokenPolicy(address tokenPolicy) public {
+        require(SOMETHING); //                                                   <--- Critical Point
+        /* Request accepted replace tokenPolicy */
+        tokenPolicy = tokenPolicy;
     }
 }
