@@ -47,8 +47,6 @@ contract EWZ {
     address oracle;
     address owner;
     
-    event user_sold_tokens_to_ewz(address user, uint256 amount);
-    
     /* Constructor that sets the owner */
     function EWZ() public {
         owner = msg.sender;
@@ -82,6 +80,32 @@ contract EWZ {
         pending = false;
         uint256 ewz_wallet_now = EnergyWallets(wallets).ask_balance(address(this));
         require(ewz_wallet_before == ewz_wallet_now - amount);
-        user_sold_tokens_to_ewz(msg.sender, amount);
+        Oracle(oracle).user_sold_tokens_to_ewz(msg.sender, amount);
+    }
+}
+
+contract Oracle {
+    address owner;
+    address ewz;
+
+    event event_user_sold_tokens_to_ewz(address user, uint256 amount);
+    
+    function Oracle() public {
+        owner = msg.sender;
+    }
+    
+    function set_addresses(address ewz_adr) public {
+        require(msg.sender == owner);
+        ewz = ewz_adr;
+    }
+    
+    function user_sold_tokens_to_ewz(address user, uint256 amount) public {
+        require(msg.sender == address(ewz));
+        event_user_sold_tokens_to_ewz(user, amount);
+    }
+    
+    function pay_user(address user, uint256 amount) public {
+        require(msg.sender == owner);
+        EWZ(ewz).pay(user, amount);
     }
 }
