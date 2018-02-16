@@ -205,3 +205,30 @@ contract EWZ is Supplier, Policy {
         return _producedKWh * kWhBuyPrice;
     }
 }
+
+contract SmartMeter {
+    address oracle;
+    address producer;
+    address supplier;
+    address payoutAddress;
+    
+    function SmartMeter() public {
+        oracle = msg.sender;
+    }
+    
+    function setAddresses(address _producer, address _supplier) public {
+        require(msg.sender == oracle);
+        producer = _producer;
+        supplier = _supplier;
+    }
+    
+    function setPayoutAddress(address _payoutAddress) public {
+        require(msg.sender == producer);
+        payoutAddress = _payoutAddress;
+    }
+    
+    function notifyEnergyProduction(uint256 _producedKWh) public {
+        require(msg.sender == oracle);
+        Supplier(supplier).notifyEnergyProduction(payoutAddress, _producedKWh);
+    }
+}
