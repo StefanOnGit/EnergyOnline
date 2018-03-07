@@ -2,4 +2,5 @@
 *aux
 *gz
 *out
+*.DS_Store
 workplace.code-workspace
