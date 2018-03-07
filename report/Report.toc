@@ -1,0 +1,24 @@
+\contentsline {section}{\numberline {1}Introduction}{1}{section.1}
+\contentsline {subsection}{\numberline {1.1}Context}{1}{subsection.1.1}
+\contentsline {subsection}{\numberline {1.2}Background}{1}{subsection.1.2}
+\contentsline {subsection}{\numberline {1.3}Problem Statement}{3}{subsection.1.3}
+\contentsline {section}{\numberline {2}Literature Review}{4}{section.2}
+\contentsline {section}{\numberline {3}Conceptual Design}{5}{section.3}
+\contentsline {subsection}{\numberline {3.1}Overview}{5}{subsection.3.1}
+\contentsline {subsection}{\numberline {3.2}Decentralized Autonomous Organization DAO}{7}{subsection.3.2}
+\contentsline {subsection}{\numberline {3.3}Characteristics and functionalities of our proposed DAO}{10}{subsection.3.3}
+\contentsline {subsubsection}{\numberline {3.3.1}Energy Management}{10}{subsubsection.3.3.1}
+\contentsline {subsubsection}{\numberline {3.3.2}Trading at the energy market}{11}{subsubsection.3.3.2}
+\contentsline {subsubsection}{\numberline {3.3.3}Profit distribution}{12}{subsubsection.3.3.3}
+\contentsline {subsubsection}{\numberline {3.3.4}Energy Token}{13}{subsubsection.3.3.4}
+\contentsline {subsection}{\numberline {3.4}Initialization of the Concept}{13}{subsection.3.4}
+\contentsline {subsection}{\numberline {3.5}Disruption Potential}{14}{subsection.3.5}
+\contentsline {subsection}{\numberline {3.6}Evaluation}{15}{subsection.3.6}
+\contentsline {subsection}{\numberline {3.7}Uncertainties, disadvantages and risks}{16}{subsection.3.7}
+\contentsline {section}{\numberline {4}Solution Design}{17}{section.4}
+\contentsline {subsection}{\numberline {4.1}Idea}{17}{subsection.4.1}
+\contentsline {subsection}{\numberline {4.2}Our Model Implementation}{18}{subsection.4.2}
+\contentsline {subsubsection}{\numberline {4.2.1}Wallet}{18}{subsubsection.4.2.1}
+\contentsline {subsection}{\numberline {4.3}Model Scenario}{18}{subsection.4.3}
+\contentsline {subsection}{\numberline {4.4}Problems and Possible Solutions}{19}{subsection.4.4}
+\contentsline {section}{\numberline {5}Conclusion/Outlook}{20}{section.5}
