@@ -309,23 +309,36 @@
 	\paragraph{}
 	Another controversial point is trust. Blockchains are supposed to build trust, so DAO's are organizations of trust, because every participant trusts that the system has been implemented fairly and is constantly improved. For example, because the system is implemented by smart contracts that are nothing more than distributed code, the entire organization is entrusted to one program. Programs continue to be developed by people who can make mistakes. Weak points in the respective blockchain software and the smart contracts executed on it are therefore a major risk. The DAO showed that a small mistake can bring down the house of cards. When it collapses, there is no saving authority or legal barrier that can help shareholders. All trust is in the code.\footnote{Decentralized Autonomous Organization - Organisationen auf der Blockchain, Jonas Verhoelen, \url{https://blog.codecentric.de/2017/08/decentralized-autonomous-organization-blockchain}, retrieved February 25, 2018.}
     
-    \section{Solution Design}
+\section{Solution Design}
    
    \paragraph{}
-   If we draw attention to the code behind our idea we can divide it into two parts: backend (solidity) and frontend (html, javascript, metamask). The purpose of the frontend is to give a simple but hopefully not less secure interface to the user so he can easily access the blockchain. The backend consists of the wallet contract (managing the tokens) and an example implementation of how some of the transfers could work. It is still not fully realistic because the complexity would increase heavily if you make the model more realistic. The focus of the following chapter is on the backend part because the frontend is quite simple. Frontend is just about letting metamask call some prepared functions of certain contracts on the blockchain, and about listening to events of the contracts (and showing these in a stylish and simple way to the user).
+   If we draw attention to the code behind our idea we can divide it into two parts: backend (solidity) and frontend (html, javascript, metamask). The purpose of the frontend is to give a simple but hopefully not less secure interface to the user so he can easily access the blockchain. The backend consists of the wallet contract (managing the tokens) and an example implementation of how some of the transfers could work. It is still not fully realistic because of the complexity of a more detailed model (and for purpose of presentation its not necessary). The focus of the following chapter is on the backend part because the frontend is quite simple. Frontend is just about letting metamask call some prepared functions of certain contracts on the blockchain, and about listening to events of the contracts (and showing these in a stylish and simple way to the user).
+   
+   \throwError
+   Can you please insert section_4_user1.PNG and section_4_user2.PNG here? Thx
+   The text below them: "Snapshots of the frontend implemented with html, javascript and MetaMask"
    
    \paragraph{}
    We will start with the abstract model of what we tried to build. Then the main part is about the implementation (in solidity) and it’s difficulties. The last part of the solution design will be about some problems with this implementation.
    
-   \subsection{Idea}
+\subsection{Idea}
    
    \paragraph{}
    The main target of our implementation is, that it has to be secure. So we try to do it as simple as possible (then there are less sources of errors). Every user should be able to get a wallet where his tokens will be stored. Nobody else should have the right to take tokens out of that ‘bag’. But there should be some automation for the transactions (e.g when a user produces for or buys energy from the connecting network at his home).
 	
 	\paragraph{}
-	To create the connection between the real world and the blockchain we use the concept of Smart-Meters. Any organization that got the trust of people in its environment could offer this service. Smart-Meters should measure the produced and consumed energy of users and report it to the blockchain, where Smart-Contracts between the user and the connecting network will transfer tokens dependant on the individual implementation of these Smart-Contracts.
+	To create the connection between the real world and the blockchain we use the concept of Smart-Meters. Any organization that got the trust of people in its environment could offer this service. Smart-Meters should measure the produced and consumed energy of users and report it to the blockchain, where Smart-Contracts between the user and the connecting network will transfer tokens dependent on the individual implementation of these Smart-Contracts.
 	
-	\subsection{Our Model Implementation}
+	\subsection{Our Implementation}
+	
+	\paragraph{}
+	The sources are available on GitHub (https://github.com/ETHBIOTS2018/EnergyOnline/Code/VersionReport/)
+	
+	\begin{figure} [h]
+		\centering
+		\includegraphics[THROW ERROR: I havent a working latex configured on my computer, pls check what width etc. are appropriate]{section_4_flow_chart.PNG}
+		\caption{The flow chart shows the 3 main actions that are possible in our implementation: User producing energy, User consuming energy and User trading tokens with other users.}
+	\end{figure}
 	
 	\subsubsection{Wallet}
 	
@@ -338,7 +351,7 @@
 		\item "buy Tokens" is the only payable function of this contract. It’s used for the ICO. For simplicity it just does a normal transfer of tokens from the wallets account to the callers account. The amount of tokens is equal to the amount of Wei (sub-currency of Ether) paid. Obviously the transaction gets cancelled if there are not enough tokens on the wallets account.
 	\end{itemize}
 		
-	\subsection{Model Scenario}
+	\subsubsection{Model Scenario}
 	
 	\paragraph{}
 	The Wallet is the only part that will be the same for all transactions in different regions with different producers and consumers. The other three contracts just show a possible scenario how Smart-Contracts could do the transactions automatically.
@@ -352,10 +365,10 @@
 	\paragraph{}
 	The User is an example contract of how a producer/consumer could implement his contracts. There is a function to "pay for energy" and a function to transfer tokens to other users (as example if Bob wants to sell produced electricity to Alice). The energy supply will be done by the operators of the networks but if both operators (the one of Bob and the one of Alice) allow to pay for energy with tokens, it will be as if Bob sold his energy to Alice. The "pay for energy" function calls the "buy Energy" function of the linked operator and sets up all required variables and functions for the transaction (it sends the callback function and sets the price, that the callback function will expect).
 	
-	\subsection{Problems and Possible Solutions}
+	\subsubsection{Problems and Possible Solutions}
 	
 	\paragraph{}
-	One problem could be the privacy. There may be users that don’t want, that everyone could know how much energy they consume and produce. This is a hard to solve problem because one of the main features of the blockchain is transparency. An approach for a solution could be, that the operator and user handle the transaction between them outside the blockchain (this requires trust from the user side). Still some transactions would be visible on the blockchain.
+	One problem could be the privacy. There may be users that don’t want, that everyone could know how much energy they consume and produce. This problem is hard to solve because one of the main features of the blockchain is transparency. An approach for a solution could be, that the operator and user handle the transaction between them outside the blockchain (this requires trust from the user side). Still some transactions would be visible on the blockchain.
 	
 	\paragraph{}
 	Another issue is, that in the implementation of the scenario (not in the implementation of the wallet) are still features, that could be exploited by the operator or the user. As example the operator could not trust the Smart-Meter. Then the token transfer would not get triggered even if the consumer produces energy. This case is not that much a problem because all actions get logged in the blockchain and the trust in the operator would decrease much, if such things happen. 
@@ -363,7 +376,7 @@
 	\paragraph{}
 	Another possible weakness of the system could be the Smart-Meter itself. A user could cheat if he manages to ‘hack’ the Smart-Meter. A possible solution for this would be a Smart-Meter that has some features that prevent hacking (as example it destroys its private key, when it notifies an attempt).
 	
-    \section{Conclusion/Outlook}
+\section{Conclusion/Outlook}
     
     \paragraph{}
     The blockchain technology has a huge potential to disrupt the energy market. It might even be necessary to push renewable energy sources enough to replace nuclear energy altogether. For this change to happen, small-scale energy production needs to become more attractive. The DAO offers possibilities not only to make energy production more worthwhile, it also gives the prosumer more control over his produced energy.
